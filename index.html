@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Derycode Finance — Invoices, Receipts & Accounting</title>
+<title>Derycode Finance — Offline POS, Invoices & Accounting</title>
 <meta name="theme-color" content="#070B14">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -12,19 +12,18 @@ body{background:#070B14;color:#e8ecf4;min-height:100vh}
 button{cursor:pointer;border:none;border-radius:10px}
 input,select,textarea{background:#0d1424;border:1px solid #22304f;color:#e8ecf4;padding:12px;border-radius:10px;font-size:15px;width:100%}
 label{display:block;font-size:12px;color:#8ea0c0;margin:12px 0 5px;text-transform:uppercase;letter-spacing:.5px}
-.top{position:sticky;top:0;z-index:5;background:rgba(7,11,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid #1a2740}
-.top .in{max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
-.brand{display:flex;gap:10px;align-items:center;text-decoration:none}
+.top{position:sticky;top:0;z-index:5;background:rgba(7,11,20,.94);backdrop-filter:blur(10px);border-bottom:1px solid #1a2740}
+.top .in{max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:12px 18px}
+.brand{display:flex;gap:10px;align-items:center}
 .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#4F7CFF,#22D3EE);display:flex;align-items:center;justify-content:center;font-weight:800;color:#070B14;font-size:18px}
 .brand b{color:#fff;font-size:18px;letter-spacing:.5px}
 .brand span{display:block;font-size:10px;color:#8ea0c0;text-transform:uppercase;letter-spacing:2px}
 .btn{background:linear-gradient(135deg,#4F7CFF,#22D3EE);color:#070B14;font-weight:700;padding:12px 18px;font-size:14px}
 .btn.g{background:linear-gradient(135deg,#22C55E,#86efac)}
 .btn.o{background:#16223a;color:#9db4e0;border:1px solid #26375c}
-.btn.d{background:#3b1220;color:#ff9db0;border:1px solid #71203a}
-.wrap{max-width:1080px;margin:auto;padding:20px 18px 80px}
-.gate{max-width:380px;margin:12vh auto 0;background:#0d1424;border:1px solid #1c2a47;border-radius:18px;padding:30px;text-align:center}
-.gate .big{font-size:40px;margin-bottom:8px}
+.btn.d{background:#3b1220;color:#ff9db0;border:1px solid #71203a;padding:8px 12px;font-size:12px}
+.wrap{max-width:1080px;margin:auto;padding:16px 18px 80px}
+.gate{max-width:380px;margin:10vh auto 0;background:#0d1424;border:1px solid #1c2a47;border-radius:18px;padding:30px;text-align:center}
 .gate h1{font-size:20px;color:#fff;margin:8px 0 2px}
 .gate p{color:#8ea0c0;font-size:13px;margin-bottom:16px}
 .tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 14px}
@@ -38,16 +37,23 @@ label{display:block;font-size:12px;color:#8ea0c0;margin:12px 0 5px;text-transfor
 .card{background:#0d1424;border:1px solid #1c2a47;border-radius:14px;padding:18px;margin-bottom:14px}
 .card h3{color:#fff;font-size:15px;margin-bottom:10px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
 table.list{width:100%;border-collapse:collapse;font-size:14px}
 table.list th{text-align:left;color:#8ea0c0;font-size:11px;text-transform:uppercase;padding:8px;border-bottom:1px solid #1c2a47}
 table.list td{padding:10px 8px;border-bottom:1px solid #141f36}
 .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
 .pill.paid{background:#0c2e1a;color:#4ade80}.pill.partial{background:#2e240c;color:#fbbf24}.pill.unpaid{background:#2e0c14;color:#fb7185}
+.sync-pill{font-size:12px;font-weight:700;padding:6px 12px;border-radius:99px}
+.sync-on{background:#0c2e1a;color:#4ade80}.sync-off{background:#2e0c14;color:#fb7185}.sync-wait{background:#2e240c;color:#fbbf24}
+.pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.pos-tile{background:#16223a;border:1px solid #26375c;border-radius:12px;padding:14px;text-align:left}
+.pos-tile b{display:block;font-size:14px;color:#fff;margin-bottom:6px;min-height:36px}
+.pos-tile span{color:#22d3ee;font-weight:800;font-size:16px}
+.cart-line{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #141f36;font-size:14px}
+.cart-line .qty{display:flex;gap:6px;align-items:center}
+.qty button{width:30px;height:30px;border-radius:8px;background:#16223a;color:#fff;font-weight:800}
 .items-hd{display:grid;grid-template-columns:2fr 70px 110px 110px 34px;gap:8px;font-size:11px;color:#8ea0c0;text-transform:uppercase;padding:8px 0}
 .items-row{display:grid;grid-template-columns:2fr 70px 110px 110px 34px;gap:8px;margin-bottom:8px}
 .items-row input{padding:9px}
-#printArea{display:none}
 @media print{
   body{background:#fff}
   .no-print,.tabs,.top{display:none!important}
@@ -74,14 +80,17 @@ table.list td{padding:10px 8px;border-bottom:1px solid #141f36}
 </head>
 <body>
 <div class="top no-print"><div class="in">
-  <a class="brand" href="#" onclick="return false"><span class="mark">D</span>
-    <div><b>DERYCODE</b><span>Engineering the Digital Future</span></div></a>
-  <button class="btn o" onclick="lockApp()">Lock</button>
+  <div class="brand"><span class="mark">D</span>
+    <div><b>DERYCODE</b><span>Engineering the Digital Future</span></div></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="syncPill" class="sync-pill sync-off">OFFLINE</span>
+    <button class="btn o" onclick="lockApp()" style="padding:8px 14px">Lock</button>
+  </div>
 </div></div>
 <div class="gate" id="gate">
-  <div class="big">🔐</div>
+  <div style="font-size:40px">🔐</div>
   <h1>Derycode Finance</h1>
-  <p>Invoices, Receipts & Financial Management — authorised staff only</p>
+  <p>Offline POS · Invoices · Receipts · Accounting</p>
   <input id="pinIn" type="password" inputmode="numeric" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')checkPin()">
   <div style="height:10px"></div>
   <button class="btn" style="width:100%" onclick="checkPin()">Unlock</button>
@@ -90,14 +99,15 @@ table.list td{padding:10px 8px;border-bottom:1px solid #141f36}
 <div id="app" style="display:none">
   <div class="wrap">
     <div class="tabs" id="tabs">
-      <button data-v="dash" class="on" onclick="go('dash')">Dashboard</button>
+      <button data-v="pos" class="on" onclick="go('pos')">POS</button>
+      <button data-v="dash" onclick="go('dash')">Dashboard</button>
       <button data-v="inv" onclick="go('inv')">Invoices</button>
-      <button data-v="new" onclick="go('new')">+ New Invoice</button>
+      <button data-v="new" onclick="go('new')">+ Invoice</button>
       <button data-v="exp" onclick="go('exp')">Expenses</button>
       <button data-v="rep" onclick="go('rep')">Reports</button>
       <button data-v="set" onclick="go('set')">Settings</button>
     </div>
-    <div id="v-dash"></div><div id="v-inv" style="display:none"></div><div id="v-new" style="display:none"></div>
+    <div id="v-pos"></div><div id="v-dash" style="display:none"></div><div id="v-inv" style="display:none"></div><div id="v-new" style="display:none"></div>
     <div id="v-exp" style="display:none"></div><div id="v-rep" style="display:none"></div><div id="v-set" style="display:none"></div>
   </div>
 </div>
@@ -105,10 +115,16 @@ table.list td{padding:10px 8px;border-bottom:1px solid #141f36}
 <script>
 const API='https://superagent-c4c23880.base44.app/functions/deryBilling';
 let PIN=localStorage.getItem('dcfin_pin')||'';
-let invoices=[],payments=[],expenses=[];
 const fmt=n=>'UGX '+(Number(n)||0).toLocaleString();
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const todayCode=()=>todayStr().replace(/-/g,'');
 function prof(){return JSON.parse(localStorage.getItem('dcfin_prof')||'{}')}
+const val=id=>document.getElementById(id).value;
+
+// ---------- OFFLINE-FIRST local database ----------
+let db=JSON.parse(localStorage.getItem('dcfin_db')||'null')||{v:2,invoices:[],payments:[],expenses:[],products:[],deleted:[],cart:[]};
+function saveDb(){localStorage.setItem('dcfin_db',JSON.stringify(db))}
 async function api(action,data){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({pin:PIN,action,...(data||{})})});
@@ -116,16 +132,80 @@ async function api(action,data){
   if(!j.ok)throw new Error(j.error||'API error');
   return j;
 }
-async function loadAll(){
-  [invoices,payments,expenses]=[[],[],[]];
-  const a=await api('listInvoices');invoices=a.invoices||[];
-  const b=await api('listPayments');payments=b.payments||[];
-  const c=await api('listExpenses');expenses=c.expenses||[];
+function nextNum(prefix,list,keyf){const t=todayCode();const n=list.filter(x=>(x[keyf]||'').startsWith(prefix+t)).length+1;return prefix+t+'-'+String(n).padStart(3,'0')}
+function markSynced(list){list.forEach(r=>r._sync=true)}
+// ---------- SYNC ENGINE ----------
+let syncing=false;
+async function syncNow(silent){
+  if(syncing||!navigator.onLine)return;
+  syncing=true;updatePill('wait');
+  try{
+    for(const d of db.deleted){await api('deleteRecord',d)}
+    db.deleted=[];
+    for(const inv of db.invoices.filter(r=>!r._sync)){
+      await api('saveInvoice',{...inv});inv._sync=true}
+    for(const pay of db.payments.filter(r=>!r._sync)){
+      await api('savePayment',{...pay});pay._sync=true}
+    for(const ex of db.expenses.filter(r=>!r._sync)){
+      await api('saveExpense',{...ex});ex._sync=true}
+    saveDb();updatePill('on');
+    if(!silent)toast('All data synced to cloud');
+  }catch(e){
+    updatePill(navigator.onLine?'off':'off');
+    if(!silent)toast('Sync failed — will retry. Data is safe on this device.');
+  }
+  syncing=false;
+}
+function updatePill(state){
+  const p=document.getElementById('syncPill');if(!p)return;
+  const pending=db.deleted.length+db.invoices.concat(db.payments,db.expenses).filter(r=>!r._sync).length;
+  if(state==='on'&&!pending){p.className='sync-pill sync-on';p.textContent='● SYNCED'}
+  else if(state==='wait'){p.className='sync-pill sync-wait';p.textContent='⟳ SYNCING'}
+  else{p.className='sync-pill sync-off';p.textContent=navigator.onLine?('● '+pending+' TO SYNC'):'● OFFLINE — working locally'}
+}
+function toast(m){const t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#16223a;border:1px solid #4F7CFF;color:#fff;padding:12px 22px;border-radius:12px;z-index:99;font-size:14px';document.body.appendChild(t);setTimeout(()=>t.remove(),3200)}
+window.addEventListener('online',()=>{updatePill('wait');syncNow(true)});
+window.addEventListener('offline',()=>updatePill('off'));
+// ---------- DELETES (local + queued to cloud) ----------
+function delInvoice(num){
+  if(!confirm('Delete invoice '+num+' and all its payments? This cannot be undone.'))return;
+  db.invoices=db.invoices.filter(i=>i.number!==num);
+  db.payments=db.payments.filter(p=>p.invoiceNumber!==num);
+  db.deleted.push({type:'invoice',key:num});
+  saveDb();syncNow(true);refreshAll();
+}
+function delPayment(rn){
+  if(!confirm('Delete receipt '+rn+'? The invoice balance will be recalculated.'))return;
+  const p=db.payments.find(x=>x.receiptNo===rn);if(!p)return;
+  db.payments=db.payments.filter(x=>x.receiptNo!==rn);
+  const inv=db.invoices.find(i=>i.number===p.invoiceNumber);
+  if(inv){
+    inv.amountPaid=Math.max(0,Number(inv.amountPaid||0)-Number(p.amount||0));
+    inv._sync=false;
+    inv.status=inv.amountPaid>=Number(inv.total||0)-0.5?'paid':(inv.amountPaid>0?'partial':'unpaid');
+  }
+  db.deleted.push({type:'payment',key:rn});
+  saveDb();syncNow(true);refreshAll();
+}
+function delExpense(exId){
+  if(!confirm('Delete this expense?'))return;
+  db.expenses=db.expenses.filter(e=>e.exId!==exId);
+  db.deleted.push({type:'expense',key:exId});
+  saveDb();syncNow(true);refreshAll();
 }
 function checkPin(){
   PIN=document.getElementById('pinIn').value.trim();
-  api('listInvoices').then(()=>{
+  api('listInvoices').then(j=>{
     localStorage.setItem('dcfin_pin',PIN);
+    // first run: adopt any existing cloud records
+    const cloud=(j.invoices||[]).map(i=>({...i,_sync:true,_c:i.created_date||''}));
+    if(!db.invoices.length&&!db.payments.length&&!db.expenses.length){
+      db.invoices=cloud;
+      return api('listPayments').then(p=>{db.payments=(p.payments||[]).map(x=>({...x,_sync:true}));return api('listExpenses')})
+        .then(e=>{db.expenses=(e.expenses||[]).map(x=>({...x,_sync:true,exId:x.exId||('EX'+(x.id||Math.random().toString(36).slice(2,10)))}))});
+    }
+  }).then(()=>{
+    saveDb();
     document.getElementById('gate').style.display='none';
     document.getElementById('app').style.display='block';
     refreshAll();
@@ -134,23 +214,15 @@ function checkPin(){
 function lockApp(){localStorage.removeItem('dcfin_pin');location.reload()}
 function go(v){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  ['dash','inv','new','exp','rep','set'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
-  if(v==='dash')renderDash();if(v==='inv')renderInv();if(v==='exp')renderExp();if(v==='rep')renderRep();if(v==='set')renderSet();
+  ['pos','dash','inv','new','exp','rep','set'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
+  if(v==='pos')renderPos();if(v==='dash')renderDash();if(v==='inv')renderInv();if(v==='exp')renderExp();if(v==='rep')renderRep();if(v==='set')renderSet();
 }
-async function refreshAll(){
-  try{
-    await loadAll();
-    renderDash();renderInv();renderExp();
-  }catch(e){
-    document.getElementById('v-dash').innerHTML='<div class="card"><h3>Could not load data</h3><p style="color:#fb7185">'+(e.message||e)+'</p><p style="color:#8ea0c0;margin-top:8px">Check your connection and tap Dashboard again.</p></div>';
-  }
-}
+function refreshAll(){renderPos();renderDash();renderInv();renderExp();updatePill('on')}
 function renderDash(){
-  const inv=invoices.reduce((s,i)=>s+Number(i.total||0),0);
-  const rec=invoices.reduce((s,i)=>s+Number(i.amountPaid||0),0);
-  const exp=expenses.reduce((s,e)=>s+Number(e.amount||0),0);
-  const el=document.getElementById('v-dash');
-  el.innerHTML=`
+  const inv=db.invoices.reduce((s,i)=>s+Number(i.total||0),0);
+  const rec=db.payments.reduce((s,i)=>s+Number(i.amount||0),0);
+  const exp=db.expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  document.getElementById('v-dash').innerHTML=`
   <div class="cards">
     <div class="stat blue"><div class="l">Total Invoiced</div><div class="v">${fmt(inv)}</div></div>
     <div class="stat"><div class="l">Received</div><div class="v" style="color:#4ade80">${fmt(rec)}</div></div>
@@ -158,49 +230,113 @@ function renderDash(){
     <div class="stat"><div class="l">Expenses</div><div class="v" style="color:#fb7185">${fmt(exp)}</div></div>
     <div class="stat blue"><div class="l">Net Profit</div><div class="v" style="color:#22d3ee">${fmt(rec-exp)}</div></div>
   </div>
-  <div class="card"><h3>Recent invoices</h3>
-  ${invoices.slice(0,5).map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #141f36">
+  <div class="card"><h3>Recent transactions</h3>
+  ${db.invoices.slice(0,6).map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #141f36">
     <div><b>${esc(i.clientName)}</b><div style="font-size:12px;color:#8ea0c0">${esc(i.number)}</div></div>
-    <div style="text-align:right"><b>${fmt(i.total)}</b><div style="font-size:11px"><span class="pill ${i.status}">${i.status}</span></div></div>
-  </div>`).join('')||'<p style="color:#8ea0c0">No invoices yet — create your first one.</p>'}
+    <div style="display:flex;gap:8px;align-items:center"><div style="text-align:right"><b>${fmt(i.total)}</b><div style="font-size:11px"><span class="pill ${i.status}">${i.status}</span></div></div>
+    <button class="btn d" onclick="delInvoice('${i.number}')">✕</button></div>
+  </div>`).join('')||'<p style="color:#8ea0c0">No transactions yet — sell from the POS tab.</p>'}
   </div>`;
 }
+function renderPos(){
+  const cartTotal=db.cart.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('v-pos').innerHTML=`
+  <div class="row" style="grid-template-columns:1.6fr 1fr;align-items:start">
+  <div class="card"><h3>Products — tap to sell</h3>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input id="pName" placeholder="New product name" style="flex:1">
+      <input id="pPrice" type="number" placeholder="Price" style="width:110px">
+      <button class="btn" onclick="addProduct()">Add</button>
+    </div>
+    <div class="pos-grid">
+    ${db.products.map((p,ix)=>`<button class="pos-tile" onclick="cartAdd(${ix})"><b>${esc(p.name)}</b><span>${fmt(p.price)}</span></button>`).join('')||'<p style="color:#8ea0c0;grid-column:1/-1">No products yet — add your first above.</p>'}
+    </div>
+    <h3 style="margin-top:16px">Products</h3>
+    ${db.products.map((p,ix)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #141f36"><span>${esc(p.name)}</span>
+      <span style="display:flex;gap:10px;align-items:center"><b style="color:#22d3ee">${fmt(p.price)}</b>
+      <button class="btn d" onclick="db.products.splice(${ix},1);saveDb();renderPos()">✕</button></span></div>`).join('')}
+  </div>
+  <div class="card"><h3>Cart (${db.cart.reduce((s,c)=>s+c.qty,0)})</h3>
+  ${db.cart.map((c,ix)=>`<div class="cart-line"><div style="flex:1"><b>${esc(c.name)}</b><div style="font-size:12px;color:#8ea0c0">${fmt(c.price)}</div></div>
+    <div class="qty"><button onclick="cartQty(${ix},1)">+</button><b>${c.qty}</b><button onclick="cartQty(${ix},-1)">−</button></div>
+    <button class="btn d" onclick="db.cart.splice(${ix},1);saveDb();renderPos()">✕</button></div>`).join('')||'<p style="color:#8ea0c0">Cart empty.</p>'}
+    <div style="padding:14px 0;font-size:18px;display:flex;justify-content:space-between"><b>TOTAL</b><b style="color:#22d3ee">${fmt(cartTotal)}</b></div>
+    <button class="btn g" style="width:100%;font-size:16px" onclick="posCheckout()">CHECKOUT & PRINT RECEIPT</button>
+  </div></div>`;
+}
+function addProduct(){
+  const n=val('pName'),p=Number(val('pPrice'));
+  if(!n||!p){alert('Enter name and price');return}
+  db.products.push({name:n,price:p});saveDb();renderPos();
+}
+function cartAdd(ix){const p=db.products[ix];const line=db.cart.find(c=>c.name===p.name);if(line)line.qty++;else db.cart.push({name:p.name,price:p.price,qty:1});saveDb();renderPos()}
+function cartQty(ix,d){db.cart[ix].qty+=d;if(db.cart[ix].qty<1)db.cart.splice(ix,1);saveDb();renderPos()}
+function posCheckout(){
+  if(!db.cart.length){alert('Cart is empty');return}
+  const total=db.cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const method=prompt('Payment method:\n1. Cash\n2. Mobile Money\n3. Credit (customer pays later)','1');
+  if(method===null)return;
+  const isCredit=/3|credit/i.test(method);
+  let customer='Walk-in customer';
+  if(isCredit){customer=prompt('Customer name (required for credit sale):','');if(!customer)return}
+  const m=/2|momo|mobile/i.test(method)?'Mobile Money':'Cash';
+  const items=db.cart.map(c=>({desc:c.name,qty:c.qty,rate:c.price,amount:c.price*c.qty}));
+  const number=nextNum('DC-POS-',db.invoices,'number');
+  const invoice={number,clientName:customer,clientPhone:'',clientEmail:'',items:JSON.stringify(items),
+    subtotal:total,vat:0,total:Math.round(total),amountPaid:isCredit?0:total,
+    status:isCredit?'unpaid':'paid',dueDate:'',notes:'POS sale',_c:new Date().toISOString()};
+  db.invoices.unshift(invoice);
+  let receipt=null;
+  if(!isCredit){
+    receipt=nextNum('DC-RCPT-',db.payments,'receiptNo');
+    db.payments.unshift({invoiceNumber:number,amount:total,method:m,ref:'',date:todayStr(),receiptNo,_sync:false});
+  }
+  db.cart=[];saveDb();
+  syncNow(true);refreshAll();go('pos');
+  if(receipt&&!isCredit){printReceipt(receipt)}
+  else{printInvoice(number)}
+  toast(isCredit?'Credit sale recorded — invoice '+number:'Sale complete — receipt '+receipt);
+}
 function renderInv(){
-  const el=document.getElementById('v-inv');
-  el.innerHTML=`<div class="card"><h3>All invoices (${invoices.length})</h3>
+  document.getElementById('v-inv').innerHTML=`<div class="card"><h3>All invoices (${db.invoices.length})</h3>
   <table class="list"><tr><th>Number</th><th>Client</th><th>Total</th><th>Paid</th><th>Status</th><th></th></tr>
-  ${invoices.map(i=>`<tr>
+  ${db.invoices.map(i=>`<tr>
     <td>${esc(i.number)}</td><td>${esc(i.clientName)}</td>
     <td>${fmt(i.total)}</td><td>${fmt(i.amountPaid)}</td>
     <td><span class="pill ${i.status}">${i.status}</span></td>
     <td style="white-space:nowrap">
       <button class="btn o" style="padding:7px 10px" onclick="printInvoice('${i.number}')">Print</button>
-      ${Number(i.total)-Number(i.amountPaid)>0.5?`<button class="btn g" style="padding:7px 10px" onclick="payDlg('${i.number}')">Payment</button>`:''}
+      ${Number(i.total)-Number(i.amountPaid)>0.5?`<button class="btn g" style="padding:7px 10px" onclick="payDlg('${i.number}')">Pay</button>`:''}
+      <button class="btn d" onclick="delInvoice('${i.number}')">✕</button>
     </td></tr>`).join('')}
   </table></div>
   <div class="card"><h3>Receipts issued</h3>
-  ${payments.map(p=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #141f36;font-size:14px">
-    <div><b>${esc(p.receiptNo)}</b><div style="font-size:12px;color:#8ea0c0">${esc(p.invoiceNumber)} · ${esc(p.method)}</div></div>
+  ${db.payments.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #141f36;font-size:14px">
+    <div><b>${esc(p.receiptNo)}</b><div style="font-size:12px;color:#8ea0c0">${esc(p.invoiceNumber)} · ${esc(p.method)} · ${esc(p.date)}</div></div>
     <div style="display:flex;gap:8px;align-items:center"><b>${fmt(p.amount)}</b>
-    <button class="btn o" style="padding:7px 10px" onclick="printReceipt('${p.receiptNo}')">Print</button></div>
-  </div>`).join('')||'<p style="color:#8ea0c0">No payments recorded yet.</p>'}
+    <button class="btn o" style="padding:7px 10px" onclick="printReceipt('${p.receiptNo}')">Print</button>
+    <button class="btn d" onclick="delPayment('${p.receiptNo}')">✕</button></div>
+  </div>`).join('')||'<p style="color:#8ea0c0">No receipts yet.</p>'}
   </div>`;
 }
 function payDlg(num){
-  const i=invoices.find(x=>x.number===num);if(!i)return;
+  const i=db.invoices.find(x=>x.number===num);if(!i)return;
   const due=Number(i.total)-Number(i.amountPaid);
   const amount=prompt('Payment amount (UGX) — balance '+fmt(due)+':',due);
   if(!amount)return;
   const method=prompt('Payment method:','Mobile Money')||'Mobile Money';
   const ref=prompt('Reference / transaction ID (optional):','')||'';
-  api('savePayment',{invoiceNumber:num,amount:Number(amount),method,ref}).then(()=>refreshAll())
-    .then(()=>{alert('Payment recorded. Receipt generated — print it from the Invoices tab.')})
-    .catch(e=>alert('Error: '+e.message));
+  const receiptNo=nextNum('DC-RCPT-',db.payments,'receiptNo');
+  db.payments.unshift({invoiceNumber:num,amount:Number(amount),method,ref,date:todayStr(),receiptNo,_sync:false});
+  i.amountPaid=Number(i.amountPaid||0)+Number(amount);
+  i._sync=false;
+  i.status=i.amountPaid>=Number(i.total)-0.5?'paid':(i.amountPaid>0?'partial':'unpaid');
+  saveDb();syncNow(true);refreshAll();
+  alert('Payment recorded — receipt '+receiptNo+'. Print it from the Invoices tab.');
 }
 let items=[{desc:'',qty:1,rate:0}];
 function renderNew(){
-  const el=document.getElementById('v-new');
-  el.innerHTML=`<div class="card">
+  document.getElementById('v-new').innerHTML=`<div class="card">
   <h3>New invoice</h3>
   <div class="row">
     <div><label>Client name</label><input id="ni-client" placeholder="Client / business name"></div>
@@ -218,8 +354,7 @@ function renderNew(){
     <div><label>VAT 18%</label><select id="ni-vat"><option value="0">No VAT</option><option value="1">Add 18% VAT</option></select></div>
     <div><label>&nbsp;</label><button class="btn" style="width:100%" onclick="saveNew()">Create invoice</button></div>
   </div>
-  <div id="ni-totals" style="margin-top:12px;color:#8ea0c0"></div>
-  </div>`;
+  <div id="ni-totals" style="margin-top:12px;color:#8ea0c0"></div></div>`;
   drawItems();
 }
 function addItem(){items.push({desc:'',qty:1,rate:0});drawItems()}
@@ -242,18 +377,16 @@ function calcNew(){
 function saveNew(){
   const sub=items.reduce((s,i)=>s+(i.qty||0)*(i.rate||0),0);
   const vat=document.getElementById('ni-vat').value==='1'?Math.round(sub*0.18):0;
-  api('saveInvoice',{clientName:document.getElementById('ni-client').value,
-    clientPhone:document.getElementById('ni-phone').value,
-    clientEmail:document.getElementById('ni-email').value,
-    dueDate:document.getElementById('ni-due').value,
-    items:JSON.stringify(items.filter(i=>i.desc)),subtotal:sub,vat,total:sub+vat})
-  .then(r=>{items=[{desc:'',qty:1,rate:0}];alert('Invoice created: '+r.invoice.number);go('inv');return refreshAll()})
-  .catch(e=>alert('Error: '+e.message));
+  const number=nextNum('DC-INV-',db.invoices,'number');
+  db.invoices.unshift({number,clientName:val('ni-client'),clientPhone:val('ni-phone'),clientEmail:val('ni-email'),
+    dueDate:val('ni-due'),items:JSON.stringify(items.filter(i=>i.desc)),subtotal:sub,vat,total:sub+vat,
+    amountPaid:0,status:'unpaid',notes:'',_c:new Date().toISOString()});
+  items=[{desc:'',qty:1,rate:0}];saveDb();syncNow(true);
+  alert('Invoice created: '+number);go('inv');refreshAll();renderNew();
 }
 function renderExp(){
-  const el=document.getElementById('v-exp');
-  const total=expenses.reduce((s,e)=>s+Number(e.amount||0),0);
-  el.innerHTML=`<div class="card"><h3>Record expense</h3>
+  const total=db.expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  document.getElementById('v-exp').innerHTML=`<div class="card"><h3>Record expense</h3>
   <div class="row">
     <div><label>Category</label><select id="ex-cat"><option>Transport</option><option>Airtime & Data</option><option>Software & Hosting</option><option>Equipment</option><option>Rent</option><option>Salaries</option><option>Marketing</option><option>Other</option></select></div>
     <div><label>Amount (UGX)</label><input id="ex-amt" type="number"></div>
@@ -264,28 +397,25 @@ function renderExp(){
   </div>
   <div style="margin-top:14px"><button class="btn" onclick="saveExp()">Save expense</button></div></div>
   <div class="card"><h3>Expenses — total ${fmt(total)}</h3>
-  <table class="list"><tr><th>Date</th><th>Category</th><th>Description</th><th>Method</th><th>Amount</th></tr>
-  ${expenses.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.description)}</td><td>${esc(e.method)}</td><td>${fmt(e.amount)}</td></tr>`).join('')||'<tr><td colspan="5" style="color:#8ea0c0">No expenses yet.</td></tr>'}
+  <table class="list"><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th></th></tr>
+  ${db.expenses.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.description)}</td>
+  <td>${fmt(e.amount)}</td><td><button class="btn d" onclick="delExpense('${esc(e.exId)}')">✕</button></td></tr>`).join('')||'<tr><td colspan="5" style="color:#8ea0c0">No expenses yet.</td></tr>'}
   </table></div>`;
 }
 function saveExp(){
-  api('saveExpense',{category:document.getElementById('ex-cat').value,
-    amount:Number(document.getElementById('ex-amt').value||0),
-    description:document.getElementById('ex-desc').value,
-    method:document.getElementById('ex-meth').value})
-  .then(()=>refreshAll()).catch(e=>alert('Error: '+e.message));
+  db.expenses.unshift({exId:'EX'+Date.now().toString(36).toUpperCase(),date:todayStr(),
+    category:val('ex-cat'),description:val('ex-desc'),amount:Number(val('ex-amt')||0),method:val('ex-meth')});
+  saveDb();syncNow(true);refreshAll();
 }
 function renderRep(){
-  const el=document.getElementById('v-rep');
-  const m=prompt('Report month (YYYY-MM) — blank for all time:',new Date().toISOString().slice(0,7));
-  if(m===null)return;
-  const inv=invoices.filter(i=>!m||(i.number||'').includes('')&&((i._c||'').slice(0,7))===m);
-  const rec=payments.filter(p=>!m||p.date.slice(0,7)===m);
-  const exp=expenses.filter(e=>!m||e.date.slice(0,7)===m);
+  const m=prompt('Report month (YYYY-MM) — blank for all time:',todayStr().slice(0,7));
+  if(m===null){return}
+  const rec=db.payments.filter(p=>!m||p.date.slice(0,7)===m);
+  const exp=db.expenses.filter(e=>!m||e.date.slice(0,7)===m);
   const recT=rec.reduce((s,p)=>s+Number(p.amount||0),0);
   const expT=exp.reduce((s,e)=>s+Number(e.amount||0),0);
   const byCat={};exp.forEach(e=>byCat[e.category]=(byCat[e.category]||0)+Number(e.amount||0));
-  el.innerHTML=`<div class="card"><h3>Financial report ${m?('for '+m):'(all time)'}</h3>
+  document.getElementById('v-rep').innerHTML=`<div class="card"><h3>Financial report ${m?('for '+m):'(all time)'}</h3>
   <table class="list">
   <tr><td>Revenue received</td><td style="color:#4ade80;text-align:right"><b>${fmt(recT)}</b></td></tr>
   <tr><td>Expenses</td><td style="color:#fb7185;text-align:right"><b>-${fmt(expT)}</b></td></tr>
@@ -299,7 +429,7 @@ function renderRep(){
 function renderSet(){
   const p=prof();
   document.getElementById('v-set').innerHTML=`<div class="card"><h3>Business profile (shown on documents)</h3>
-  <div class="row"><div><label>Company name</label><input id="sp-name" value="${esc(p.name||'Derycode Ltd')}"</div>
+  <div class="row"><div><label>Company name</label><input id="sp-name" value="${esc(p.name||'Derycode Ltd')}"></div>
   <div><label>Tagline</label><input id="sp-tag" value="${esc(p.tag||'Engineering the Digital Future')}"></div></div>
   <div class="row"><div><label>Address</label><input id="sp-addr" value="${esc(p.addr||'Kyenjojo, Uganda')}"></div>
   <div><label>TIN</label><input id="sp-tin" value="${esc(p.tin||'')}"></div></div>
@@ -307,13 +437,15 @@ function renderSet(){
   <div><label>Email</label><input id="sp-email" value="${esc(p.email||'info@derycode.com')}"></div></div>
   <label>Payment details (shown on invoices)</label>
   <textarea id="sp-pay" rows="3">${esc(p.pay||'Mobile Money: +256 772 002 326 (Derick Asiimwe)')}</textarea>
-  <div style="margin-top:14px"><button class="btn" onclick="saveProf()">Save profile</button></div></div>`;
+  <div style="margin-top:14px"><button class="btn" onclick="saveProf()">Save profile</button></div></div>
+  <div class="card"><h3>Cloud sync</h3>
+  <p style="color:#8ea0c0;font-size:14px;margin-bottom:12px">All data is stored on this device and works fully offline. When you have internet, changes sync to the Derycode cloud automatically.</p>
+  <button class="btn" onclick="syncNow()">Sync now</button></div>`;
 }
 function saveProf(){
   localStorage.setItem('dcfin_prof',JSON.stringify({name:val('sp-name'),tag:val('sp-tag'),addr:val('sp-addr'),tin:val('sp-tin'),phone:val('sp-phone'),email:val('sp-email'),pay:val('sp-pay')}));
   alert('Profile saved.');
 }
-const val=id=>document.getElementById(id).value;
 function docHead(kind,num,date){
   const p=prof();
   return `<div class="doc">
@@ -325,12 +457,12 @@ function docHead(kind,num,date){
 }
 function docFoot(){return `<div class="ft">${esc(prof().name||'Derycode Ltd')} · ${esc(prof().phone||'')} · ${esc(prof().email||'')} · derycode.publicvm.com<br>Thank you for your business — Engineering the Digital Future.</div></div>`}
 function printInvoice(num){
-  const i=invoices.find(x=>x.number===num);if(!i)return;
+  const i=db.invoices.find(x=>x.number===num);if(!i)return;
   const its=JSON.parse(i.items||'[]');
   document.getElementById('printArea').innerHTML=docHead('Tax Invoice',i.number,(i._c||'').slice(0,10))+
   `<div style="padding:0 32px 18px;font-size:13px;display:flex;justify-content:space-between">
     <div><div class="secrec">Bill to</div><b style="font-size:15px">${esc(i.clientName)}</b><br>${esc(i.clientPhone||'')} ${i.clientEmail?'<br>'+esc(i.clientEmail):''}</div>
-    <div style="text-align:right">Due date: ${esc(i.dueDate||'—')}<br>Status: <b>${i.status.toUpperCase()}</b></div></div>
+    <div style="text-align:right">Due date: ${esc(i.dueDate||'—')}<br>Status: <b>${(i.status||'').toUpperCase()}</b></div></div>
   <div style="padding:0 32px"><table class="doc-it"><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
   ${its.map(t=>`<tr><td>${esc(t.desc)}</td><td>${t.qty}</td><td>${fmt(t.rate)}</td><td>${fmt(t.amount)}</td></tr>`).join('')}
   </table>
@@ -344,19 +476,22 @@ function printInvoice(num){
   window.print();
 }
 function printReceipt(rn){
-  const p=payments.find(x=>x.receiptNo===rn);if(!p)return;
+  const p=db.payments.find(x=>x.receiptNo===rn);if(!p)return;
+  const inv=db.invoices.find(x=>x.number===p.invoiceNumber);
+  const its=inv?JSON.parse(inv.items||'[]'):[];
   document.getElementById('printArea').innerHTML=docHead('Official Receipt',p.receiptNo,p.date)+
   `<div style="padding:26px 32px;font-size:14px">
   <div style="text-align:center;margin-bottom:18px"><span class="stamp">PAID</span></div>
   <table class="doc-it"><tr><th>Description</th><th>Amount</th></tr>
+  ${its.length?its.map(t=>`<tr><td>${esc(t.desc)} × ${t.qty}</td><td>${fmt(t.amount)}</td></tr>`).join(''):''}
   <tr><td>Payment against invoice <b>${esc(p.invoiceNumber)}</b> — ${esc(p.method)}${p.ref?' (Ref: '+esc(p.ref)+')':''}</td><td>${fmt(p.amount)}</td></tr>
   <tr class="grand"><td>TOTAL RECEIVED</td><td>${fmt(p.amount)}</td></tr></table></div>`+docFoot();
   window.print();
 }
 function printReport(m){
-  const rec=payments.filter(p=>!m||p.date.slice(0,7)===m).reduce((s,p)=>s+Number(p.amount||0),0);
-  const exp=expenses.filter(e=>!m||e.date.slice(0,7)===m).reduce((s,e)=>s+Number(e.amount||0),0);
-  document.getElementById('printArea').innerHTML=docHead('Financial Report','REPORT '+(m||'ALL-TIME'),new Date().toISOString().slice(0,10))+
+  const rec=db.payments.filter(p=>!m||p.date.slice(0,7)===m).reduce((s,p)=>s+Number(p.amount||0),0);
+  const exp=db.expenses.filter(e=>!m||e.date.slice(0,7)===m).reduce((s,e)=>s+Number(e.amount||0),0);
+  document.getElementById('printArea').innerHTML=docHead('Financial Report','REPORT '+(m||'ALL-TIME'),todayStr())+
   `<div style="padding:26px 32px"><table class="doc-it">
   <tr><th>Item</th><th>Amount</th></tr>
   <tr><td>Revenue received</td><td>${fmt(rec)}</td></tr>

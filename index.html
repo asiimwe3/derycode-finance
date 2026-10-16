@@ -137,7 +137,7 @@ function go(v){
   ['dash','inv','new','exp','rep','set'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
   if(v==='dash')renderDash();if(v==='inv')renderInv();if(v==='exp')renderExp();if(v==='rep')renderRep();if(v==='set')renderSet();
 }
-async function refreshAll(){await loadAll();renderDash();renderInv();renderExp();renderRep()}
+async function refreshAll(){await loadAll();renderDash();renderInv();renderExp()}
 function renderDash(){
   const inv=invoices.reduce((s,i)=>s+Number(i.total||0),0);
   const rec=invoices.reduce((s,i)=>s+Number(i.amountPaid||0),0);
@@ -358,6 +358,7 @@ function printReport(m){
   window.print();
 }
 renderNew();
+if(PIN){document.getElementById('pinIn').value=PIN;checkPin();}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
 </body>

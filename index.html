@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derycode Finance — Invoices, Receipts & Accounting</title>
+<meta name="theme-color" content="#070B14">
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:#070B14;color:#e8ecf4;min-height:100vh}
+button{cursor:pointer;border:none;border-radius:10px}
+input,select,textarea{background:#0d1424;border:1px solid #22304f;color:#e8ecf4;padding:12px;border-radius:10px;font-size:15px;width:100%}
+label{display:block;font-size:12px;color:#8ea0c0;margin:12px 0 5px;text-transform:uppercase;letter-spacing:.5px}
+.top{position:sticky;top:0;z-index:5;background:rgba(7,11,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid #1a2740}
+.top .in{max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
+.brand{display:flex;gap:10px;align-items:center;text-decoration:none}
+.mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#4F7CFF,#22D3EE);display:flex;align-items:center;justify-content:center;font-weight:800;color:#070B14;font-size:18px}
+.brand b{color:#fff;font-size:18px;letter-spacing:.5px}
+.brand span{display:block;font-size:10px;color:#8ea0c0;text-transform:uppercase;letter-spacing:2px}
+.btn{background:linear-gradient(135deg,#4F7CFF,#22D3EE);color:#070B14;font-weight:700;padding:12px 18px;font-size:14px}
+.btn.g{background:linear-gradient(135deg,#22C55E,#86efac)}
+.btn.o{background:#16223a;color:#9db4e0;border:1px solid #26375c}
+.btn.d{background:#3b1220;color:#ff9db0;border:1px solid #71203a}
+.wrap{max-width:1080px;margin:auto;padding:20px 18px 80px}
+.gate{max-width:380px;margin:12vh auto 0;background:#0d1424;border:1px solid #1c2a47;border-radius:18px;padding:30px;text-align:center}
+.gate .big{font-size:40px;margin-bottom:8px}
+.gate h1{font-size:20px;color:#fff;margin:8px 0 2px}
+.gate p{color:#8ea0c0;font-size:13px;margin-bottom:16px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 14px}
+.tabs button{background:#0d1424;color:#8ea0c0;padding:10px 16px;font-size:13px;font-weight:600;white-space:nowrap;border:1px solid #1c2a47}
+.tabs button.on{background:linear-gradient(135deg,#4F7CFF,#22D3EE);color:#070B14}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:#0d1424;border:1px solid #1c2a47;border-radius:14px;padding:16px}
+.stat .v{font-size:22px;font-weight:800;color:#fff;margin-top:4px}
+.stat .l{font-size:11px;color:#8ea0c0;text-transform:uppercase;letter-spacing:1px}
+.blue{background:linear-gradient(135deg,#4F7CFF22,#22D3EE22);border-color:#4F7CFF55}
+.card{background:#0d1424;border:1px solid #1c2a47;border-radius:14px;padding:18px;margin-bottom:14px}
+.card h3{color:#fff;font-size:15px;margin-bottom:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+table.list{width:100%;border-collapse:collapse;font-size:14px}
+table.list th{text-align:left;color:#8ea0c0;font-size:11px;text-transform:uppercase;padding:8px;border-bottom:1px solid #1c2a47}
+table.list td{padding:10px 8px;border-bottom:1px solid #141f36}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.pill.paid{background:#0c2e1a;color:#4ade80}.pill.partial{background:#2e240c;color:#fbbf24}.pill.unpaid{background:#2e0c14;color:#fb7185}
+.items-hd{display:grid;grid-template-columns:2fr 70px 110px 110px 34px;gap:8px;font-size:11px;color:#8ea0c0;text-transform:uppercase;padding:8px 0}
+.items-row{display:grid;grid-template-columns:2fr 70px 110px 110px 34px;gap:8px;margin-bottom:8px}
+.items-row input{padding:9px}
+#printArea{display:none}
+@media print{
+  body{background:#fff}
+  .no-print,.tabs,.top{display:none!important}
+  #app{display:none!important}
+  #printArea{display:block!important}
+  .doc{max-width:800px;margin:0 auto;color:#111;font-family:'Segoe UI',Arial,sans-serif}
+  .doc-hd{background:#070B14;color:#fff;padding:28px 32px;display:flex;justify-content:space-between;align-items:center}
+  .doc-hd .lg{font-size:26px;font-weight:800;letter-spacing:1px}
+  .doc-hd .tg{font-size:10px;color:#9db4e0;letter-spacing:3px;text-transform:uppercase}
+  .doc-band{background:linear-gradient(90deg,#4F7CFF,#22D3EE);height:5px}
+  .doc h2{font-size:30px;color:#070B14;letter-spacing:4px}
+  .doc .meta{display:flex;justify-content:space-between;padding:20px 32px;border-bottom:2px solid #e5e9f0}
+  .doc .secrec{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px}
+  table.doc-it{width:100%;border-collapse:collapse;margin:14px 0}
+  table.doc-it th{background:#f0f3f9;color:#333;font-size:11px;text-transform:uppercase;padding:9px 12px;text-align:left}
+  table.doc-it td{padding:10px 12px;border-bottom:1px solid #e5e9f0;font-size:13px}
+  .doc .totals{margin-left:auto;width:280px}
+  .doc .totals td{padding:7px 12px;font-size:13px}
+  .doc .grand td{border-top:2px solid #070B14;font-weight:800;font-size:16px;color:#070B14}
+  .doc .ft{margin-top:26px;border-top:1px solid #ccd4e0;padding:14px 0;font-size:11px;color:#667;text-align:center;line-height:1.7}
+  .stamp{display:inline-block;border:3px solid #22C55E;color:#22C55E;font-weight:800;padding:6px 16px;border-radius:8px;transform:rotate(-6deg);font-size:20px;letter-spacing:2px}
+}
+</style>
+</head>
+<body>
+<div class="top no-print"><div class="in">
+  <a class="brand" href="#" onclick="return false"><span class="mark">D</span>
+    <div><b>DERYCODE</b><span>Engineering the Digital Future</span></div></a>
+  <button class="btn o" onclick="lockApp()">Lock</button>
+</div></div>
+<div class="gate" id="gate">
+  <div class="big">🔐</div>
+  <h1>Derycode Finance</h1>
+  <p>Invoices, Receipts & Financial Management — authorised staff only</p>
+  <input id="pinIn" type="password" inputmode="numeric" placeholder="Enter PIN" onkeydown="if(event.key==='Enter')checkPin()">
+  <div style="height:10px"></div>
+  <button class="btn" style="width:100%" onclick="checkPin()">Unlock</button>
+  <p id="pinErr" style="color:#fb7185;display:none;margin-top:10px">Wrong PIN — try again</p>
+</div>
+<div id="app" style="display:none">
+  <div class="wrap">
+    <div class="tabs" id="tabs">
+      <button data-v="dash" class="on" onclick="go('dash')">Dashboard</button>
+      <button data-v="inv" onclick="go('inv')">Invoices</button>
+      <button data-v="new" onclick="go('new')">+ New Invoice</button>
+      <button data-v="exp" onclick="go('exp')">Expenses</button>
+      <button data-v="rep" onclick="go('rep')">Reports</button>
+      <button data-v="set" onclick="go('set')">Settings</button>
+    </div>
+    <div id="v-dash"></div><div id="v-inv" style="display:none"></div><div id="v-new" style="display:none"></div>
+    <div id="v-exp" style="display:none"></div><div id="v-rep" style="display:none"></div><div id="v-set" style="display:none"></div>
+  </div>
+</div>
+<div id="printArea"></div>
+<script>
+const API='https://superagent-c4c23880.base44.app/functions/deryBilling';
+let PIN=localStorage.getItem('dcfin_pin')||'';
+let invoices=[],payments=[],expenses=[];
+const fmt=n=>'UGX '+(Number(n)||0).toLocaleString();
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function prof(){return JSON.parse(localStorage.getItem('dcfin_prof')||'{}')}
+async function api(action,data){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({pin:PIN,action,...(data||{})})});
+  const j=await r.json();
+  if(!j.ok)throw new Error(j.error||'API error');
+  return j;
+}
+async function loadAll(){
+  [invoices,payments,expenses]=[[],[],[]];
+  const a=await api('listInvoices');invoices=a.invoices||[];
+  const b=await api('listPayments');payments=b.payments||[];
+  const c=await api('listExpenses');expenses=c.expenses||[];
+}
+function checkPin(){
+  PIN=document.getElementById('pinIn').value.trim();
+  api('listInvoices').then(()=>{
+    localStorage.setItem('dcfin_pin',PIN);
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    refreshAll();
+  }).catch(()=>{document.getElementById('pinErr').style.display='block'});
+}
+function lockApp(){localStorage.removeItem('dcfin_pin');location.reload()}
+function go(v){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  ['dash','inv','new','exp','rep','set'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
+  if(v==='dash')renderDash();if(v==='inv')renderInv();if(v==='exp')renderExp();if(v==='rep')renderRep();if(v==='set')renderSet();
+}
+async function refreshAll(){await loadAll();renderDash();renderInv();renderExp();renderRep()}
+function renderDash(){
+  const inv=invoices.reduce((s,i)=>s+Number(i.total||0),0);
+  const rec=invoices.reduce((s,i)=>s+Number(i.amountPaid||0),0);
+  const exp=expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  const el=document.getElementById('v-dash');
+  el.innerHTML=`
+  <div class="cards">
+    <div class="stat blue"><div class="l">Total Invoiced</div><div class="v">${fmt(inv)}</div></div>
+    <div class="stat"><div class="l">Received</div><div class="v" style="color:#4ade80">${fmt(rec)}</div></div>
+    <div class="stat"><div class="l">Outstanding</div><div class="v" style="color:#fbbf24">${fmt(inv-rec)}</div></div>
+    <div class="stat"><div class="l">Expenses</div><div class="v" style="color:#fb7185">${fmt(exp)}</div></div>
+    <div class="stat blue"><div class="l">Net Profit</div><div class="v" style="color:#22d3ee">${fmt(rec-exp)}</div></div>
+  </div>
+  <div class="card"><h3>Recent invoices</h3>
+  ${invoices.slice(0,5).map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #141f36">
+    <div><b>${esc(i.clientName)}</b><div style="font-size:12px;color:#8ea0c0">${esc(i.number)}</div></div>
+    <div style="text-align:right"><b>${fmt(i.total)}</b><div style="font-size:11px"><span class="pill ${i.status}">${i.status}</span></div></div>
+  </div>`).join('')||'<p style="color:#8ea0c0">No invoices yet — create your first one.</p>'}
+  </div>`;
+}
+function renderInv(){
+  const el=document.getElementById('v-inv');
+  el.innerHTML=`<div class="card"><h3>All invoices (${invoices.length})</h3>
+  <table class="list"><tr><th>Number</th><th>Client</th><th>Total</th><th>Paid</th><th>Status</th><th></th></tr>
+  ${invoices.map(i=>`<tr>
+    <td>${esc(i.number)}</td><td>${esc(i.clientName)}</td>
+    <td>${fmt(i.total)}</td><td>${fmt(i.amountPaid)}</td>
+    <td><span class="pill ${i.status}">${i.status}</span></td>
+    <td style="white-space:nowrap">
+      <button class="btn o" style="padding:7px 10px" onclick="printInvoice('${i.number}')">Print</button>
+      ${Number(i.total)-Number(i.amountPaid)>0.5?`<button class="btn g" style="padding:7px 10px" onclick="payDlg('${i.number}')">Payment</button>`:''}
+    </td></tr>`).join('')}
+  </table></div>
+  <div class="card"><h3>Receipts issued</h3>
+  ${payments.map(p=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #141f36;font-size:14px">
+    <div><b>${esc(p.receiptNo)}</b><div style="font-size:12px;color:#8ea0c0">${esc(p.invoiceNumber)} · ${esc(p.method)}</div></div>
+    <div style="display:flex;gap:8px;align-items:center"><b>${fmt(p.amount)}</b>
+    <button class="btn o" style="padding:7px 10px" onclick="printReceipt('${p.receiptNo}')">Print</button></div>
+  </div>`).join('')||'<p style="color:#8ea0c0">No payments recorded yet.</p>'}
+  </div>`;
+}
+function payDlg(num){
+  const i=invoices.find(x=>x.number===num);if(!i)return;
+  const due=Number(i.total)-Number(i.amountPaid);
+  const amount=prompt('Payment amount (UGX) — balance '+fmt(due)+':',due);
+  if(!amount)return;
+  const method=prompt('Payment method:','Mobile Money')||'Mobile Money';
+  const ref=prompt('Reference / transaction ID (optional):','')||'';
+  api('savePayment',{invoiceNumber:num,amount:Number(amount),method,ref}).then(()=>refreshAll())
+    .then(()=>{alert('Payment recorded. Receipt generated — print it from the Invoices tab.')})
+    .catch(e=>alert('Error: '+e.message));
+}
+let items=[{desc:'',qty:1,rate:0}];
+function renderNew(){
+  const el=document.getElementById('v-new');
+  el.innerHTML=`<div class="card">
+  <h3>New invoice</h3>
+  <div class="row">
+    <div><label>Client name</label><input id="ni-client" placeholder="Client / business name"></div>
+    <div><label>Phone</label><input id="ni-phone" placeholder="+256..."></div>
+  </div>
+  <div class="row">
+    <div><label>Email (optional)</label><input id="ni-email" placeholder="name@email.com"></div>
+    <div><label>Due date</label><input id="ni-due" type="date"></div>
+  </div>
+  <h3 style="margin-top:18px">Service items</h3>
+  <div class="items-hd"><span>Description</span><span>Qty</span><span>Rate (UGX)</span><span>Amount</span><span></span></div>
+  <div id="ni-items"></div>
+  <button class="btn o" onclick="addItem()">+ Add item</button>
+  <div class="row" style="margin-top:16px;max-width:420px">
+    <div><label>VAT 18%</label><select id="ni-vat"><option value="0">No VAT</option><option value="1">Add 18% VAT</option></select></div>
+    <div><label>&nbsp;</label><button class="btn" style="width:100%" onclick="saveNew()">Create invoice</button></div>
+  </div>
+  <div id="ni-totals" style="margin-top:12px;color:#8ea0c0"></div>
+  </div>`;
+  drawItems();
+}
+function addItem(){items.push({desc:'',qty:1,rate:0});drawItems()}
+function drawItems(){
+  document.getElementById('ni-items').innerHTML=items.map((it,ix)=>`
+  <div class="items-row">
+    <input value="${esc(it.desc)}" oninput="items[${ix}].desc=this.value" placeholder="e.g. Website development">
+    <input type="number" value="${it.qty}" oninput="items[${ix}].qty=this.value;calcNew()">
+    <input type="number" value="${it.rate}" oninput="items[${ix}].rate=this.value;calcNew()">
+    <div style="display:flex;align-items:center">${fmt((it.qty||0)*(it.rate||0))}</div>
+    <button class="btn d" onclick="items.splice(${ix},1);drawItems()">✕</button>
+  </div>`).join('');
+  calcNew();
+}
+function calcNew(){
+  const sub=items.reduce((s,i)=>s+(i.qty||0)*(i.rate||0),0);
+  const vat=document.getElementById('ni-vat').value==='1'?Math.round(sub*0.18):0;
+  document.getElementById('ni-totals').innerHTML=`Subtotal: <b style="color:#fff">${fmt(sub)}</b> · VAT: <b style="color:#fff">${fmt(vat)}</b> · TOTAL: <b style="color:#22d3ee">${fmt(sub+vat)}</b>`;
+}
+function saveNew(){
+  const sub=items.reduce((s,i)=>s+(i.qty||0)*(i.rate||0),0);
+  const vat=document.getElementById('ni-vat').value==='1'?Math.round(sub*0.18):0;
+  api('saveInvoice',{clientName:document.getElementById('ni-client').value,
+    clientPhone:document.getElementById('ni-phone').value,
+    clientEmail:document.getElementById('ni-email').value,
+    dueDate:document.getElementById('ni-due').value,
+    items:JSON.stringify(items.filter(i=>i.desc)),subtotal:sub,vat,total:sub+vat})
+  .then(r=>{items=[{desc:'',qty:1,rate:0}];alert('Invoice created: '+r.invoice.number);go('inv');return refreshAll()})
+  .catch(e=>alert('Error: '+e.message));
+}
+function renderExp(){
+  const el=document.getElementById('v-exp');
+  const total=expenses.reduce((s,e)=>s+Number(e.amount||0),0);
+  el.innerHTML=`<div class="card"><h3>Record expense</h3>
+  <div class="row">
+    <div><label>Category</label><select id="ex-cat"><option>Transport</option><option>Airtime & Data</option><option>Software & Hosting</option><option>Equipment</option><option>Rent</option><option>Salaries</option><option>Marketing</option><option>Other</option></select></div>
+    <div><label>Amount (UGX)</label><input id="ex-amt" type="number"></div>
+  </div>
+  <div class="row">
+    <div><label>Description</label><input id="ex-desc" placeholder="What was it for?"></div>
+    <div><label>Method</label><select id="ex-meth"><option>Cash</option><option>Mobile Money</option><option>Bank</option></select></div>
+  </div>
+  <div style="margin-top:14px"><button class="btn" onclick="saveExp()">Save expense</button></div></div>
+  <div class="card"><h3>Expenses — total ${fmt(total)}</h3>
+  <table class="list"><tr><th>Date</th><th>Category</th><th>Description</th><th>Method</th><th>Amount</th></tr>
+  ${expenses.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.category)}</td><td>${esc(e.description)}</td><td>${esc(e.method)}</td><td>${fmt(e.amount)}</td></tr>`).join('')||'<tr><td colspan="5" style="color:#8ea0c0">No expenses yet.</td></tr>'}
+  </table></div>`;
+}
+function saveExp(){
+  api('saveExpense',{category:document.getElementById('ex-cat').value,
+    amount:Number(document.getElementById('ex-amt').value||0),
+    description:document.getElementById('ex-desc').value,
+    method:document.getElementById('ex-meth').value})
+  .then(()=>refreshAll()).catch(e=>alert('Error: '+e.message));
+}
+function renderRep(){
+  const el=document.getElementById('v-rep');
+  const m=prompt('Report month (YYYY-MM) — blank for all time:',new Date().toISOString().slice(0,7));
+  if(m===null)return;
+  const inv=invoices.filter(i=>!m||(i.number||'').includes('')&&((i._c||'').slice(0,7))===m);
+  const rec=payments.filter(p=>!m||p.date.slice(0,7)===m);
+  const exp=expenses.filter(e=>!m||e.date.slice(0,7)===m);
+  const recT=rec.reduce((s,p)=>s+Number(p.amount||0),0);
+  const expT=exp.reduce((s,e)=>s+Number(e.amount||0),0);
+  const byCat={};exp.forEach(e=>byCat[e.category]=(byCat[e.category]||0)+Number(e.amount||0));
+  el.innerHTML=`<div class="card"><h3>Financial report ${m?('for '+m):'(all time)'}</h3>
+  <table class="list">
+  <tr><td>Revenue received</td><td style="color:#4ade80;text-align:right"><b>${fmt(recT)}</b></td></tr>
+  <tr><td>Expenses</td><td style="color:#fb7185;text-align:right"><b>-${fmt(expT)}</b></td></tr>
+  <tr><td style="font-weight:800">NET PROFIT</td><td style="text-align:right;color:#22d3ee"><b>${fmt(recT-expT)}</b></td></tr>
+  </table></div>
+  <div class="card"><h3>Expenses by category</h3>
+  ${Object.entries(byCat).map(([c,a])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #141f36"><span>${esc(c)}</span><b>${fmt(a)}</b></div>`).join('')||'<p style="color:#8ea0c0">None this period.</p>'}
+  </div>
+  <div style="margin-top:8px"><button class="btn o" onclick="printReport(${JSON.stringify(m||'')})">Print report</button></div>`;
+}
+function renderSet(){
+  const p=prof();
+  document.getElementById('v-set').innerHTML=`<div class="card"><h3>Business profile (shown on documents)</h3>
+  <div class="row"><div><label>Company name</label><input id="sp-name" value="${esc(p.name||'Derycode Ltd')}"</div>
+  <div><label>Tagline</label><input id="sp-tag" value="${esc(p.tag||'Engineering the Digital Future')}"></div></div>
+  <div class="row"><div><label>Address</label><input id="sp-addr" value="${esc(p.addr||'Kyenjojo, Uganda')}"></div>
+  <div><label>TIN</label><input id="sp-tin" value="${esc(p.tin||'')}"></div></div>
+  <div class="row"><div><label>Phone</label><input id="sp-phone" value="${esc(p.phone||'+256 772 002 326')}"></div>
+  <div><label>Email</label><input id="sp-email" value="${esc(p.email||'info@derycode.com')}"></div></div>
+  <label>Payment details (shown on invoices)</label>
+  <textarea id="sp-pay" rows="3">${esc(p.pay||'Mobile Money: +256 772 002 326 (Derick Asiimwe)')}</textarea>
+  <div style="margin-top:14px"><button class="btn" onclick="saveProf()">Save profile</button></div></div>`;
+}
+function saveProf(){
+  localStorage.setItem('dcfin_prof',JSON.stringify({name:val('sp-name'),tag:val('sp-tag'),addr:val('sp-addr'),tin:val('sp-tin'),phone:val('sp-phone'),email:val('sp-email'),pay:val('sp-pay')}));
+  alert('Profile saved.');
+}
+const val=id=>document.getElementById(id).value;
+function docHead(kind,num,date){
+  const p=prof();
+  return `<div class="doc">
+  <div class="doc-hd"><div><div class="lg">DERYCODE</div><div class="tg">${esc(p.tag||'Engineering the Digital Future')}</div></div>
+  <div style="text-align:right;font-size:12px;line-height:1.8">${esc(p.addr||'')}<br>${esc(p.phone||'')}<br>${esc(p.email||'')}${p.tin?'<br>TIN: '+esc(p.tin):''}</div></div>
+  <div class="doc-band"></div>
+  <div class="meta"><div><div class="secrec">${kind}</div><h2>${num}</h2></div>
+  <div style="text-align:right;font-size:13px">Date: ${date}</div></div>`;
+}
+function docFoot(){return `<div class="ft">${esc(prof().name||'Derycode Ltd')} · ${esc(prof().phone||'')} · ${esc(prof().email||'')} · derycode.publicvm.com<br>Thank you for your business — Engineering the Digital Future.</div></div>`}
+function printInvoice(num){
+  const i=invoices.find(x=>x.number===num);if(!i)return;
+  const its=JSON.parse(i.items||'[]');
+  document.getElementById('printArea').innerHTML=docHead('Tax Invoice',i.number,(i._c||'').slice(0,10))+
+  `<div style="padding:0 32px 18px;font-size:13px;display:flex;justify-content:space-between">
+    <div><div class="secrec">Bill to</div><b style="font-size:15px">${esc(i.clientName)}</b><br>${esc(i.clientPhone||'')} ${i.clientEmail?'<br>'+esc(i.clientEmail):''}</div>
+    <div style="text-align:right">Due date: ${esc(i.dueDate||'—')}<br>Status: <b>${i.status.toUpperCase()}</b></div></div>
+  <div style="padding:0 32px"><table class="doc-it"><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
+  ${its.map(t=>`<tr><td>${esc(t.desc)}</td><td>${t.qty}</td><td>${fmt(t.rate)}</td><td>${fmt(t.amount)}</td></tr>`).join('')}
+  </table>
+  <table class="totals"><tr><td>Subtotal</td><td style="text-align:right">${fmt(i.subtotal)}</td></tr>
+  ${Number(i.vat)?`<tr><td>VAT</td><td style="text-align:right">${fmt(i.vat)}</td></tr>`:''}
+  <tr class="grand"><td>TOTAL</td><td style="text-align:right">${fmt(i.total)}</td></tr>
+  <tr><td>Paid</td><td style="text-align:right">${fmt(i.amountPaid)}</td></tr>
+  <tr><td>Balance</td><td style="text-align:right"><b>${fmt(Number(i.total)-Number(i.amountPaid))}</b></td></tr></table>
+  <p style="font-size:12px;color:#556">Payment: ${esc(prof().pay||'')}</p></div>`+
+  (i.notes?`<p style="padding:0 32px;font-size:12px;color:#556">Notes: ${esc(i.notes)}</p>`:'')+docFoot();
+  window.print();
+}
+function printReceipt(rn){
+  const p=payments.find(x=>x.receiptNo===rn);if(!p)return;
+  document.getElementById('printArea').innerHTML=docHead('Official Receipt',p.receiptNo,p.date)+
+  `<div style="padding:26px 32px;font-size:14px">
+  <div style="text-align:center;margin-bottom:18px"><span class="stamp">PAID</span></div>
+  <table class="doc-it"><tr><th>Description</th><th>Amount</th></tr>
+  <tr><td>Payment against invoice <b>${esc(p.invoiceNumber)}</b> — ${esc(p.method)}${p.ref?' (Ref: '+esc(p.ref)+')':''}</td><td>${fmt(p.amount)}</td></tr>
+  <tr class="grand"><td>TOTAL RECEIVED</td><td>${fmt(p.amount)}</td></tr></table></div>`+docFoot();
+  window.print();
+}
+function printReport(m){
+  const rec=payments.filter(p=>!m||p.date.slice(0,7)===m).reduce((s,p)=>s+Number(p.amount||0),0);
+  const exp=expenses.filter(e=>!m||e.date.slice(0,7)===m).reduce((s,e)=>s+Number(e.amount||0),0);
+  document.getElementById('printArea').innerHTML=docHead('Financial Report','REPORT '+(m||'ALL-TIME'),new Date().toISOString().slice(0,10))+
+  `<div style="padding:26px 32px"><table class="doc-it">
+  <tr><th>Item</th><th>Amount</th></tr>
+  <tr><td>Revenue received</td><td>${fmt(rec)}</td></tr>
+  <tr><td>Expenses</td><td>-${fmt(exp)}</td></tr>
+  <tr class="grand"><td>NET PROFIT</td><td>${fmt(rec-exp)}</td></tr></table></div>`+docFoot();
+  window.print();
+}
+renderNew();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+</script>
+</body>
+</html>

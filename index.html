@@ -137,7 +137,14 @@ function go(v){
   ['dash','inv','new','exp','rep','set'].forEach(x=>document.getElementById('v-'+x).style.display=x===v?'block':'none');
   if(v==='dash')renderDash();if(v==='inv')renderInv();if(v==='exp')renderExp();if(v==='rep')renderRep();if(v==='set')renderSet();
 }
-async function refreshAll(){await loadAll();renderDash();renderInv();renderExp()}
+async function refreshAll(){
+  try{
+    await loadAll();
+    renderDash();renderInv();renderExp();
+  }catch(e){
+    document.getElementById('v-dash').innerHTML='<div class="card"><h3>Could not load data</h3><p style="color:#fb7185">'+(e.message||e)+'</p><p style="color:#8ea0c0;margin-top:8px">Check your connection and tap Dashboard again.</p></div>';
+  }
+}
 function renderDash(){
   const inv=invoices.reduce((s,i)=>s+Number(i.total||0),0);
   const rec=invoices.reduce((s,i)=>s+Number(i.amountPaid||0),0);
